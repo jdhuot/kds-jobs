@@ -1,11 +1,11 @@
 {
   "dependencies": {
+    "google-auth-library": "^9.0.0",
     "googleapis": "^126.0.1"
   },
   "name": "kds-jobs",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
