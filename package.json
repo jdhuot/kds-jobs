@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "googleapis": "^126.0.1"
+  },
+  "name": "kds-jobs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jdhuot/kds-jobs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jdhuot/kds-jobs/issues"
+  },
+  "homepage": "https://github.com/jdhuot/kds-jobs#readme",
+  "description": ""
+}
