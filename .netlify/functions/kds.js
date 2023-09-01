@@ -35,168 +35,184 @@ async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) 
 
   console.log("made it to sendToGPT3 func..")
 
+  try {
+    const completion = await openai.chat.completions.create({
+      messages: [{ role: 'user', content: prompt }],
+      model: 'gpt-3.5-turbo',
+    });
+
+
+
+    console.log("made it to after completion..")
+
+    let inputString = completion.choices[0].message.content;
   
-  const completion = await openai.chat.completions.create({
-    messages: [{ role: 'user', content: prompt }],
-    model: 'gpt-3.5-turbo',
-  });
-
-  console.log("made it to after completion..")
-
-  let inputString = completion.choices[0].message.content;
-
-  // Find the start and end positions of the object within the string
-  const start = inputString.indexOf("{");
-  const end = inputString.lastIndexOf("}") + 1;
-
-  // Extract the object substring
-  const objectString = inputString.slice(start, end);
-
-  // Parse the object string into an actual JavaScript object
-  const parsedObject = JSON.parse(objectString);
-
-  // Check if the "Client" key value contains "spa" and update it to "SPAAR" if true
-  if (parsedObject["Client"] && parsedObject["Client"].toLowerCase().includes("spa")) {
-    parsedObject["Client"] = "SPAAR";
-  } else if (parsedObject["Client"] && parsedObject["Client"].toLowerCase().includes("rob")) {
-  parsedObject["Client"] = "Rob's Drywall";
-  }
-
-
-  // Extract the year from the "Job Start Date" and update it to the current year if it's less
-  let jobStartDate = parsedObject["Job Start Date"];
-  if (jobStartDate) {
-    const dateParts = jobStartDate.split("-");
-    const currentYear = new Date().getFullYear();
-    const jobYear = parseInt(dateParts[2]);
-
-    if (jobYear < currentYear) {
-      dateParts[2] = currentYear;
-      parsedObject["Job Start Date"] = dateParts.join("-");
+    // Find the start and end positions of the object within the string
+    const start = inputString.indexOf("{");
+    const end = inputString.lastIndexOf("}") + 1;
+  
+    // Extract the object substring
+    const objectString = inputString.slice(start, end);
+  
+    // Parse the object string into an actual JavaScript object
+    const parsedObject = JSON.parse(objectString);
+  
+    // Check if the "Client" key value contains "spa" and update it to "SPAAR" if true
+    if (parsedObject["Client"] && parsedObject["Client"].toLowerCase().includes("spa")) {
+      parsedObject["Client"] = "SPAAR";
+    } else if (parsedObject["Client"] && parsedObject["Client"].toLowerCase().includes("rob")) {
+    parsedObject["Client"] = "Rob's Drywall";
     }
-  }
-
-  console.log("made it to after completion mods..")
-
-  console.log("parsedObject: ", parsedObject);
-
-  // I've got the data baby
-
-  async function fetchWebflowCollectionItems(token, collectionId) {
-    const baseUrl = `https://api.webflow.com/collections/`;
-    const basicOptions = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-        authorization: `Bearer ${token}`
+  
+  
+    // Extract the year from the "Job Start Date" and update it to the current year if it's less
+    let jobStartDate = parsedObject["Job Start Date"];
+    if (jobStartDate) {
+      const dateParts = jobStartDate.split("-");
+      const currentYear = new Date().getFullYear();
+      const jobYear = parseInt(dateParts[2]);
+  
+      if (jobYear < currentYear) {
+        dateParts[2] = currentYear;
+        parsedObject["Job Start Date"] = dateParts.join("-");
       }
-    };
-
-    const fetchJobs = await fetch(`${baseUrl}${collectionId}/items`, basicOptions);
-    const fetchJobsJSON = await fetchJobs.json();
-
-
-    let existingItem = fetchJobsJSON.items.filter(item => item.name.toLowerCase() === parsedObject["Job Address"].toLowerCase());
-
-    if (existingItem.length > 0) {
-      // job exists, just update
-      
-      const patchJob = await fetch(`${baseUrl}${collectionId}/items/${existingItem[0]._id}`, {
-        method: 'PATCH',
+    }
+  
+    console.log("made it to after completion mods..")
+  
+    console.log("parsedObject: ", parsedObject);
+  
+    // I've got the data baby
+  
+    async function fetchWebflowCollectionItems(token, collectionId) {
+      const baseUrl = `https://api.webflow.com/collections/`;
+      const basicOptions = {
+        method: 'GET',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ fields: {
-          client: parsedObject.Client,
-          "job-start-date": new Date(parsedObject["Job Start Date"]),
-          quantity: parsedObject.Quantity,
-          email: emailHtml,
-          "date-updated": new Date(),
-          timeframe: parsedObject.Timeframe,
-          notes: parsedObject.Notes,
-          _archived: false, 
-          _draft: false
-        } })
-      });
-
-      // const patchJobJSON = await patchJob.json();
-
-      const publishPatchedJob = await fetch(`${baseUrl}${collectionId}/items/publish`, {
-        method: 'PUT',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({itemIds: [existingItem[0]._id]})
-      });
-
-      const publishPatchedJobJSON = await publishPatchedJob.json();
-      console.log("publishPatchedJobJSON: ", publishPatchedJobJSON);
-      
-    } else {
-      // job doesn't exist, let's create it
-
-      const createJob = await fetch(`${baseUrl}${collectionId}/items/`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ fields: {
-          client: parsedObject.Client,
-          "job-start-date": new Date(parsedObject["Job Start Date"]),
-          quantity: parsedObject.Quantity,
-          email: emailHtml,
-          timeframe: parsedObject.Timeframe,
-          notes: parsedObject.Notes,
-          slug: Math.floor(Math.random() * 100000000000000).toString(), 
-          name: parsedObject["Job Address"], 
-          _archived: false, 
-          _draft: false
-        } })
-      });
-
-      const createJobJSON = await createJob.json();
-
-      console.log("createJobJSON: ", createJobJSON);
-
-      const newJobId = createJobJSON._id;
-
-      if (newJobId) {
-        const publishJob = await fetch(`${baseUrl}${collectionId}/items/publish`, {
+          accept: 'application/json',
+          authorization: `Bearer ${token}`
+        }
+      };
+  
+      const fetchJobs = await fetch(`${baseUrl}${collectionId}/items`, basicOptions);
+      const fetchJobsJSON = await fetchJobs.json();
+  
+  
+      let existingItem = fetchJobsJSON.items.filter(item => item.name.toLowerCase() === parsedObject["Job Address"].toLowerCase());
+  
+      if (existingItem.length > 0) {
+        // job exists, just update
+        
+        const patchJob = await fetch(`${baseUrl}${collectionId}/items/${existingItem[0]._id}`, {
+          method: 'PATCH',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ fields: {
+            client: parsedObject.Client,
+            "job-start-date": new Date(parsedObject["Job Start Date"]),
+            quantity: parsedObject.Quantity,
+            email: emailHtml,
+            "date-updated": new Date(),
+            timeframe: parsedObject.Timeframe,
+            notes: parsedObject.Notes,
+            _archived: false, 
+            _draft: false
+          } })
+        });
+  
+        // const patchJobJSON = await patchJob.json();
+  
+        const publishPatchedJob = await fetch(`${baseUrl}${collectionId}/items/publish`, {
           method: 'PUT',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({itemIds: [newJobId]})
+          body: JSON.stringify({itemIds: [existingItem[0]._id]})
         });
   
-        const publishJobJSON = await publishJob.json();
-        console.log("publishJobJSON: ", publishJobJSON);
+        const publishPatchedJobJSON = await publishPatchedJob.json();
+        console.log("publishPatchedJobJSON: ", publishPatchedJobJSON);
+        
+      } else {
+        // job doesn't exist, let's create it
+  
+        const createJob = await fetch(`${baseUrl}${collectionId}/items/`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ fields: {
+            client: parsedObject.Client,
+            "job-start-date": new Date(parsedObject["Job Start Date"]),
+            quantity: parsedObject.Quantity,
+            email: emailHtml,
+            timeframe: parsedObject.Timeframe,
+            notes: parsedObject.Notes,
+            slug: Math.floor(Math.random() * 100000000000000).toString(), 
+            name: parsedObject["Job Address"], 
+            _archived: false, 
+            _draft: false
+          } })
+        });
+  
+        const createJobJSON = await createJob.json();
+  
+        console.log("createJobJSON: ", createJobJSON);
+  
+        const newJobId = createJobJSON._id;
+  
+        if (newJobId) {
+          const publishJob = await fetch(`${baseUrl}${collectionId}/items/publish`, {
+            method: 'PUT',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({itemIds: [newJobId]})
+          });
+    
+          const publishJobJSON = await publishJob.json();
+          console.log("publishJobJSON: ", publishJobJSON);
+        }
+  
+  
       }
-
-
+  
+  
     }
+  
+    const collectionId = '649e37c4a37a893333750cfd';
+    
+    fetchWebflowCollectionItems(process.env.WEBFLOW_TOKEN, collectionId)
+      .then(items => {
+        return {
+          statusCode: 200,
+          body: {"res": "endpoint hit, sent to GPT/Webflow!"}
+        };
+        // console.log('Webflow Collection Items:', items);
+      });
 
 
+
+    
+
+  } catch (error) {
+    console.log("Error with OpenAI API: ", error);
   }
 
-  const collectionId = '649e37c4a37a893333750cfd';
   
-  fetchWebflowCollectionItems(process.env.WEBFLOW_TOKEN, collectionId)
-    .then(items => {
-      return {
-        statusCode: 200,
-        body: {"res": "endpoint hit, sent to GPT/Webflow!"}
-      };
-      // console.log('Webflow Collection Items:', items);
-    });
+  const completion = await openai.chat.completions.create({
+    messages: [{ role: 'user', content: prompt }],
+    model: 'gpt-3.5-turbo',
+  });
 
 
   
