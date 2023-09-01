@@ -7,10 +7,10 @@ const fetch = require('node-fetch');
 // HELPERS
 
 // Markdown
-const turndownService = new TurndownService();
-function convertHtmlToMarkdown(html) {
-  return turndownService.turndown(html);
-}
+// const turndownService = new TurndownService();
+// function convertHtmlToMarkdown(html) {
+//   return turndownService.turndown(html);
+// }
 
 
 // Open AI
@@ -266,7 +266,7 @@ exports.handler = async function(event, context) {
   if (containsKeywords(emailBodyHTML, keywords)) {
     console.log("Email body contains one of the keywords.");
 
-    sendToGPT3(senderInfo, emailMarkdown, instructions, emailBodyHTML).catch(console.error);
+    await sendToGPT3(senderInfo, emailMarkdown, instructions, emailBodyHTML).catch(console.error);
 
   } else {
     console.log("Email body does not contain any of the keywords.");
