@@ -230,10 +230,12 @@ exports.handler = async function(event, context) {
   console.log("httpMethod: ", httpMethod);
   console.log("body: ", body);
 
+  let data = JSON.parse(body)
 
-  const senderInfo = body.sender;
-  const emailBodyHTML = body.bodyHtml;
-  const emailMarkdown = body.bodyMarkdown;
+
+  const senderInfo = data.sender;
+  const emailBodyHTML = data.bodyHtml;
+  const emailMarkdown = data.bodyMarkdown;
   const keywords = ["work order", "robsdrywall", "spaar", "sanding", "job site", "job address", "sand"];
   // console.log("res.data.payload.parts: ", res.data.payload.parts);
   console.log("emailMarkdown: ", emailMarkdown);
