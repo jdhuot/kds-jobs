@@ -194,13 +194,13 @@ async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) 
     await fetchWebflowCollectionItems(process.env.WEBFLOW_TOKEN, collectionId)
 
     
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({"res": "endpoint hit, sent to GPT/Webflow!"})
-    };
+    // return {
+    //   statusCode: 200,
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({"res": "endpoint hit, sent to GPT/Webflow!"})
+    // };
 
 
 
@@ -269,6 +269,15 @@ exports.handler = async function(event, context) {
     console.log("Email body contains one of the keywords.");
 
     await sendToGPT3(senderInfo, emailMarkdown, instructions, emailBodyHTML).catch(console.error);
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({"res": "endpoint hit, sent to GPT/Webflow!"})
+    };
+    
 
   } else {
     console.log("Email body does not contain any of the keywords.");
