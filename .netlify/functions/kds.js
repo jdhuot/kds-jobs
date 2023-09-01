@@ -196,6 +196,9 @@ async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) 
     
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({"res": "endpoint hit, sent to GPT/Webflow!"})
     };
 
