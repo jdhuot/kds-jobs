@@ -205,7 +205,7 @@ function containsKeywords(text, keywords) {
 
 
 exports.handler = async function(event, context) {
-  if (event.httpMethod !== "GET") {
+  if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
