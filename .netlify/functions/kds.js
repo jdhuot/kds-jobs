@@ -248,7 +248,7 @@ exports.handler = async function(event, context) {
 
   return {
     statusCode: 200,
-    body: "endpoint was hit"
+    body: {res: "endpoint hit!"}.json()
   };
 
 
