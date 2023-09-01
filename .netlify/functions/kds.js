@@ -73,11 +73,9 @@ async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) 
     }
   }
 
-  console.log(parsedObject);
+  console.log("parsedObject: ", parsedObject);
 
   // I've got the data baby
-
-  parsedObject["Quantity"] = 5951
 
   async function fetchWebflowCollectionItems(token, collectionId) {
     const baseUrl = `https://api.webflow.com/collections/`;
@@ -188,6 +186,10 @@ async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) 
   
   fetchWebflowCollectionItems(process.env.WEBFLOW_TOKEN, collectionId)
     .then(items => {
+      return {
+        statusCode: 200,
+        body: {"res": "endpoint hit, sent to GPT/Webflow!"}
+      };
       // console.log('Webflow Collection Items:', items);
     });
 
@@ -230,7 +232,7 @@ exports.handler = async function(event, context) {
   console.log("httpMethod: ", httpMethod);
   console.log("body: ", body);
 
-  let data = JSON.parse(body)
+  let data = JSON.parse(body);
 
 
   const senderInfo = data.sender;
@@ -244,11 +246,6 @@ exports.handler = async function(event, context) {
     console.log("Email body contains one of the keywords.");
 
     sendToGPT3(senderInfo, emailMarkdown, instructions, emailBodyHTML).catch(console.error);
-
-    return {
-      statusCode: 200,
-      body: {"res": "endpoint hit, sent to GPT/Webflow!"}
-    };
 
   } else {
     console.log("Email body does not contain any of the keywords.");
