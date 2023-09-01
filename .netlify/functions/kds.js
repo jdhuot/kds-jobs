@@ -230,26 +230,33 @@ exports.handler = async function(event, context) {
   console.log("httpMethod: ", httpMethod);
   console.log("body: ", body);
 
-  // const senderInfo = console.log("sender info: ", getSenderInfo(res.data.payload.headers));
-  // const emailBodyHTML = getEmailBody(res.data);
-  // const emailMarkdown = convertHtmlToMarkdown(emailBodyHTML);
-  // const keywords = ["work order", "robsdrywall", "spaar", "sanding", "job site", "job address", "sand"];
-  // // console.log("res.data.payload.parts: ", res.data.payload.parts);
-  // console.log("emailMarkdown: ", emailMarkdown);
 
-  // if (containsKeywords(emailBodyHTML, keywords)) {
-  //   console.log("Email body contains one of the keywords.");
+  const senderInfo = body.sender;
+  const emailBodyHTML = body.bodyHtml;
+  const emailMarkdown = body.bodyMarkdown;
+  const keywords = ["work order", "robsdrywall", "spaar", "sanding", "job site", "job address", "sand"];
+  // console.log("res.data.payload.parts: ", res.data.payload.parts);
+  console.log("emailMarkdown: ", emailMarkdown);
 
-  //   sendToGPT3(senderInfo, emailMarkdown, instructions, emailBodyHTML).catch(console.error);
+  if (containsKeywords(emailBodyHTML, keywords)) {
+    console.log("Email body contains one of the keywords.");
 
-  // } else {
-  //   console.log("Email body does not contain any of the keywords.");
-  // }
+    sendToGPT3(senderInfo, emailMarkdown, instructions, emailBodyHTML).catch(console.error);
 
-  return {
-    statusCode: 200,
-    body: {res: "endpoint hit!"}.json()
-  };
+    return {
+      statusCode: 200,
+      body: {"res": "endpoint hit, sent to GPT/Webflow!"}
+    };
+
+  } else {
+    console.log("Email body does not contain any of the keywords.");
+
+    return {
+      statusCode: 200,
+      body: {"res": "endpoint hit, but email didn't contain keywords.."}
+    };
+  }
+
 
 
 };
