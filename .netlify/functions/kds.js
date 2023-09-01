@@ -41,6 +41,7 @@ async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) 
     model: 'gpt-3.5-turbo',
   });
 
+  console.log("made it to after completion..")
 
   let inputString = completion.choices[0].message.content;
 
@@ -74,6 +75,8 @@ async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) 
       parsedObject["Job Start Date"] = dateParts.join("-");
     }
   }
+
+  console.log("made it to after completion mods..")
 
   console.log("parsedObject: ", parsedObject);
 
