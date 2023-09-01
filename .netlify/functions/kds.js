@@ -275,7 +275,7 @@ exports.handler = async function(event, context) {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({"res": "endpoint hit, but email didn't contain keywords.."});
+      body: JSON.stringify({"res": "endpoint hit, but email didn't contain keywords.."})
     };
   }
 
