@@ -33,6 +33,8 @@ Context - an email came in to a drywall sanding company called Klassen Drywall S
 async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) {
   const prompt = `instructions: ${instructions}\n\nemail sender: ${senderInfo}\n\nemail body (markdown): ${markdownContent}`;
 
+  console.log("made it to sendToGPT3 func..")
+
   
   const completion = await openai.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
