@@ -193,9 +193,10 @@ async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) 
     
     await fetchWebflowCollectionItems(process.env.WEBFLOW_TOKEN, collectionId)
 
+    
     return {
       statusCode: 200,
-      body: {"res": "endpoint hit, sent to GPT/Webflow!"}
+      body: JSON.stringify({"res": "endpoint hit, sent to GPT/Webflow!"})
     };
 
 
