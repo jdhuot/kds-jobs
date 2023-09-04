@@ -56,7 +56,7 @@ function modifyJob(jobObj) {
 // }
 
 
-async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) {
+async function sendToGPT3(senderInfo, markdownContent, instructions) {
   const prompt = `instructions: ${instructions}\n\nemail sender: ${senderInfo}\n\nemail body (markdown): ${markdownContent}`;
 
   const completion = await openai.chat.completions.create({
@@ -84,7 +84,7 @@ async function sendToGPT3(senderInfo, markdownContent, instructions, emailHtml) 
 
 
 
-async function fetchWebflowCollectionItems(token, collectionId, parsedObject) {
+async function fetchWebflowCollectionItems(token, collectionId, parsedObject, emailHtml) {
   const baseUrl = `https://api.webflow.com/collections/`;
   const basicOptions = {
     method: 'GET',
@@ -238,12 +238,12 @@ exports.handler = async function(event, context) {
   if (containsKeywords(emailBodyHTML, keywords)) {
     console.log("Email body contains one of the keywords.");
 
-    const jobFromGpt = await sendToGPT3(senderInfo, emailMarkdown, instructions, emailBodyHTML).catch(console.error).catch((error) => {
+    const jobFromGpt = await sendToGPT3(senderInfo, emailMarkdown, instructions).catch(console.error).catch((error) => {
       console.log("Error with OpenAI API: ", error);
     });
 
     const collectionId = '649e37c4a37a893333750cfd';
-    const webflowProcessing = await fetchWebflowCollectionItems(process.env.WEBFLOW_TOKEN, collectionId, jobFromGpt).catch((error) => {
+    const webflowProcessing = await fetchWebflowCollectionItems(process.env.WEBFLOW_TOKEN, collectionId, jobFromGpt, emailBodyHTML).catch((error) => {
       console.log("Error with Webflow API: ", error);
     })
 
