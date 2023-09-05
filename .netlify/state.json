@@ -1,0 +1,19 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Airdrie",
+			"country": {
+				"code": "CA",
+				"name": "Canada"
+			},
+			"subdivision": {
+				"code": "AB",
+				"name": "Alberta"
+			},
+			"timezone": "America/Edmonton",
+			"latitude": 51.3062,
+			"longitude": -114.0394
+		},
+		"timestamp": 1693883354211
+	}
+}
