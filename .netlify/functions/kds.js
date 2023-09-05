@@ -90,12 +90,15 @@ async function sendToGPT3(senderInfo, markdownContent, instructions) {
 
   let inputString2 = completion2.choices[0].message.content;
 
+  console.log("inputString2: ", inputString2);
+
   // Find the start and end positions of the object within the string
   const start2 = inputString2.indexOf("{");
   const end2 = inputString2.lastIndexOf("}") + 1;
   // Extract the object substring
   const objectString2 = inputString2.slice(start2, end2);
   // Parse the object string into an actual JavaScript object
+  console.log("objectString2: ", objectString2);
   const parsedObject2 = JSON.parse(objectString2);
 
   modifyJob(parsedObject2);
