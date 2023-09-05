@@ -20,8 +20,6 @@
   }
   
   setTimeout(function(){
-    
-  
   
   	window.initializeGtag();
     
@@ -36,6 +34,5 @@
         sendGa('click', "[data-ga='about-hero-signup']", "Click 'Sign Up Free' Button in Hero", 'Button', "About Sign Up Button Hero", "$0.00");
       }
     }
-    
   
   },600);

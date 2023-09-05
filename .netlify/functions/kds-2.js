@@ -207,7 +207,7 @@ exports.handler = async function(event, context) {
   const originalOutput = data.originalOutput;
   const emailBodyHTML = data.bodyHtml;
   // console.log("res.data.payload.parts: ", res.data.payload.parts);
-  console.log("emailMarkdown: ", emailMarkdown);
+  // console.log("emailMarkdown: ", emailMarkdown);
 
 
   const jobFromGpt = await sendToGPT3(originalInput, originalOutput).catch((error) => {
