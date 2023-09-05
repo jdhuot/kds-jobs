@@ -72,13 +72,42 @@ async function sendToGPT3(senderInfo, markdownContent, instructions) {
   // Extract the object substring
   const objectString = inputString.slice(start, end);
   // Parse the object string into an actual JavaScript object
-  const parsedObject = JSON.parse(objectString);
+  const parsedObject1 = JSON.parse(objectString);
 
-  modifyJob(parsedObject);
+  modifyJob(parsedObject1);
 
-  console.log("parsedObject: ", parsedObject);
-  // I've got the data baby
-  return parsedObject;
+  console.log("parsedObject: ", parsedObject1);
+  // I've got the initial data baby
+
+
+  const prompt2 = `Please look over the initial instructions sent to Chat GPT earlier, along with the initial inputs, and then analyze the initial output from Chat GPT to see if it accurately followed the instructions. If there are errors, please fix and output the correct object.
+  ##############################
+  Initial instructions and input: ${prompt}
+  ##############################
+  Initial output: ${objectString}
+  `
+
+
+  const completion2 = await openai.chat.completions.create({
+    messages: [{ role: 'user', content: prompt2 }],
+    model: 'gpt-3.5-turbo',
+  });
+
+  let inputString2 = completion2.choices[0].message.content;
+
+  // Find the start and end positions of the object within the string
+  const start2 = inputString2.indexOf("{");
+  const end2 = inputString2.lastIndexOf("}") + 1;
+  // Extract the object substring
+  const objectString2 = inputString2.slice(start2, end2);
+  // Parse the object string into an actual JavaScript object
+  const parsedObject2 = JSON.parse(objectString2);
+
+  modifyJob(parsedObject2);
+
+  console.log("parsedObject2: ", parsedObject2);
+
+  return parsedObject2;
   
 }
 
