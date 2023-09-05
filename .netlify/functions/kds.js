@@ -49,11 +49,11 @@ function modifyJob(jobObj) {
   return jobObj;
 }
 
-// Markdown
-// const turndownService = new TurndownService();
-// function convertHtmlToMarkdown(html) {
-//   return turndownService.turndown(html);
-// }
+Markdown
+const turndownService = new TurndownService();
+function convertHtmlToMarkdown(html) {
+  return turndownService.turndown(html);
+}
 
 
 async function sendToGPT3(senderInfo, markdownContent, instructions) {
@@ -226,7 +226,7 @@ exports.handler = async function(event, context) {
 
   const senderInfo = data.sender;
   const emailBodyHTML = data.bodyHtml;
-  const emailMarkdown = data.bodyMarkdown;
+  const emailMarkdown = convertHtmlToMarkdown(emailBodyHTML);
   const keywords = ["work order", "robsdrywall", "spaar", "sanding", "job site", "job address", "sand"];
   // console.log("res.data.payload.parts: ", res.data.payload.parts);
   console.log("emailMarkdown: ", emailMarkdown);
