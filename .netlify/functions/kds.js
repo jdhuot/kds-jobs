@@ -79,6 +79,8 @@ async function sendToGPT3(senderInfo, markdownContent, instructions) {
   console.log("parsedObject1: ", parsedObject1);
   // I've got the initial data baby
 
+  return { originalInput: prompt, originalOutput: parsedObject1 }
+
 
   const prompt2 = `Please look over the initial instructions sent to Chat GPT earlier, along with the initial inputs, and then analyze the initial output from Chat GPT to see if it accurately followed the instructions. If there are errors, please fix and output the correct object. ############################## Initial instructions and input: ${prompt} ############################# Initial output: ${JSON.stringify(parsedObject1)}`;
 
@@ -261,21 +263,32 @@ exports.handler = async function(event, context) {
   if (containsKeywords(emailBodyHTML, keywords)) {
     console.log("Email body contains one of the keywords.");
 
-    const jobFromGpt = await sendToGPT3(senderInfo, emailMarkdown, instructions).catch(console.error).catch((error) => {
+    const jobFromGpt = await sendToGPT3(senderInfo, emailMarkdown, instructions).catch((error) => {
       console.log("Error with OpenAI API: ", error);
     });
 
-    const collectionId = '649e37c4a37a893333750cfd';
-    const webflowProcessing = await fetchWebflowCollectionItems(process.env.WEBFLOW_TOKEN, collectionId, jobFromGpt, emailBodyHTML).catch((error) => {
-      console.log("Error with Webflow API: ", error);
-    })
+    jobFromGpt.bodyHtml = emailBodyHTML;
+
+    const sendToKds2 = await fetch(`https://kds-jobs.netlify.app/.netlify/functions/kds-2`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jobFromGpt)
+    });
+
+    // const collectionId = '649e37c4a37a893333750cfd';
+    // const webflowProcessing = await fetchWebflowCollectionItems(process.env.WEBFLOW_TOKEN, collectionId, jobFromGpt, emailBodyHTML).catch((error) => {
+    //   console.log("Error with Webflow API: ", error);
+    // })
 
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({"res": "endpoint hit, sent to GPT/Webflow!"})
+      body: JSON.stringify({"res": "endpoint hit, sent to KDS-2!"})
     };
     
 
