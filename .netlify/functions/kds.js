@@ -1,4 +1,4 @@
-const utf8 = require('utf8');
+// const utf8 = require('utf8');
 const TurndownService = require('turndown');
 const OpenAI = require('openai');
 const fetch = require('node-fetch');
@@ -76,16 +76,11 @@ async function sendToGPT3(senderInfo, markdownContent, instructions) {
 
   modifyJob(parsedObject1);
 
-  console.log("parsedObject: ", parsedObject1);
+  console.log("parsedObject1: ", parsedObject1);
   // I've got the initial data baby
 
 
-  const prompt2 = `Please look over the initial instructions sent to Chat GPT earlier, along with the initial inputs, and then analyze the initial output from Chat GPT to see if it accurately followed the instructions. If there are errors, please fix and output the correct object.
-  ##############################
-  Initial instructions and input: ${prompt}
-  ##############################
-  Initial output: ${objectString}
-  `
+  const prompt2 = `Please look over the initial instructions sent to Chat GPT earlier, along with the initial inputs, and then analyze the initial output from Chat GPT to see if it accurately followed the instructions. If there are errors, please fix and output the correct object. ############################## Initial instructions and input: ${prompt} ############################# Initial output: ${JSON.stringify(parsedObject1)}`;
 
 
   const completion2 = await openai.chat.completions.create({
