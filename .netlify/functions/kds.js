@@ -207,10 +207,6 @@ exports.handler = async function(event, context) {
 
   const { headers, httpMethod, body } = event;
 
-  // headers['Access-Control-Allow-Origin'] = '*';
-  // headers['Access-Control-Allow-Methods'] = '*';
-  // headers['Access-Control-Allow-Headers'] = '*';
-
   if (httpMethod === 'OPTIONS') {
     console.log("Returning 204 status code for OPTIONS request");
     return {
