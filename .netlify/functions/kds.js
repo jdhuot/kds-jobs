@@ -2,6 +2,7 @@
 const TurndownService = require('turndown');
 const OpenAI = require('openai');
 const fetch = require('node-fetch');
+const cheerio = require('cheerio');
 
 
 
@@ -246,9 +247,9 @@ exports.handler = async function(event, context) {
   }
 
 
-  console.log("headers: ", headers);
-  console.log("httpMethod: ", httpMethod);
-  console.log("body: ", body);
+  // console.log("headers: ", headers);
+  // console.log("httpMethod: ", httpMethod);
+  // console.log("body: ", body);
 
   let data = JSON.parse(body);
 
@@ -258,10 +259,40 @@ exports.handler = async function(event, context) {
   const emailMarkdown = convertHtmlToMarkdown(emailBodyHTML);
   const keywords = ["work order", "robsdrywall", "spaar", "sanding", "job site", "job address", "sand"];
   // console.log("res.data.payload.parts: ", res.data.payload.parts);
-  console.log("emailMarkdown: ", emailMarkdown);
+  // console.log("emailMarkdown: ", emailMarkdown);
 
   if (containsKeywords(emailBodyHTML, keywords)) {
     console.log("Email body contains one of the keywords.");
+
+    if (senderInfo.includes('robsdrywall')) {
+
+      // Load the HTML string into Cheerio
+      const $ = cheerio.load(emailBodyHTML);
+
+      const keywords = ['job address', 'klassen', 'company', 'sand', '-'];
+
+      const filteredTrsArray = $('tr').filter(function() {
+        const textContent = $(this).text().toLowerCase();
+        return keywords.some(keyword => textContent.includes(keyword.toLowerCase()));
+      }).get();
+    
+      const $tableToReplace = $('.WordSection1 > table');
+      if ($tableToReplace.length) {
+        const $newTable = $('<table></table>');
+        const $tbody = $('<tbody></tbody>');
+        
+        $tbody.append(filteredTrsArray);
+        $newTable.append($tbody);
+    
+        $tableToReplace.replaceWith($newTable);
+      }
+    
+      const updatedHtml = $.html();
+
+
+      emailMarkdown = convertHtmlToMarkdown(updatedHtml); // modified markdown for robs drywall
+
+    }
 
     const jobFromGpt = await sendToGPT3(senderInfo, emailMarkdown, instructions).catch((error) => {
       console.log("Error with OpenAI API: ", error);
@@ -278,10 +309,7 @@ exports.handler = async function(event, context) {
       body: JSON.stringify(jobFromGpt)
     });
 
-    // const collectionId = '649e37c4a37a893333750cfd';
-    // const webflowProcessing = await fetchWebflowCollectionItems(process.env.WEBFLOW_TOKEN, collectionId, jobFromGpt, emailBodyHTML).catch((error) => {
-    //   console.log("Error with Webflow API: ", error);
-    // })
+
 
     return {
       statusCode: 200,
