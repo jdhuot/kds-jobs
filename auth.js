@@ -13,3 +13,7 @@ const authUrl = oauth2Client.generateAuthUrl({
 });
 
 console.log(`Authenticate here: ${authUrl}`);
+
+
+
+https://kds-jobs.netlify.app/final?code=4/0Adeu5BWLjYgMF_a_tPGzYsHo23UllyuD93zj283Yf79nSQX_FDwy5OLL6Gh5d8JV66ObGA&scope=https://www.googleapis.com/auth/gmail.readonly

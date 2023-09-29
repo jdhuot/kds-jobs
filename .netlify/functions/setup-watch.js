@@ -46,3 +46,27 @@ exports.handler = async function (event, context) {
     };
   }
 };
+
+
+
+
+
+
+const endpoint = "https://kds-jobs.netlify.app/.netlify/functions/kds"; 
+
+const emailData = {
+  subject: "subject info",
+  bodyHtml: "<p>hi</p>",
+  bodyMarkdown: "hi",
+  sender: "jeremy"
+};
+
+
+
+const postData = await fetch(endpoint, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(emailData)
+})

@@ -25,13 +25,33 @@ notes - 1. the quantity should be in square feet, but the value returned should 
 
 // HELPERS
 
-function modifyJob(jobObj) {
+function modifyJob(jobObj, emailBodyHtml) {
 
   // Check if the "Client" key value contains "spa" and update it to "SPAAR" if true
   if (jobObj["Client"] && jobObj["Client"].toLowerCase().includes("spa")) {
     jobObj["Client"] = "SPAAR";
   } else if (jobObj["Client"] && jobObj["Client"].toLowerCase().includes("rob")) {
   jobObj["Client"] = "Rob's Drywall";
+  }
+
+  if (
+    jobObj["Client"] == null || 
+    jobObj["Client"] == "null" ||
+    jobObj["Client"] == false || 
+    jobObj["Client"] == "false" ||
+    jobObj["Client"] == "undefined" ||
+    jobObj["Client"] == undefined ||
+    jobObj["Client"] == "" ||
+    jobObj["Client"] == '' 
+  ) {
+    const spaar = ["spaar"]
+    if (containsKeywords(emailBodyHtml, spaar)) {
+      jobObj["Client"] = "SPAAR"
+    }
+    const robs = ["robs drywall", "rob's drywall","robsdrywall"]
+    if (containsKeywords(emailBodyHtml, robs)) {
+      jobObj["Client"] = "Rob's Drywall"
+    }
   }
 
 
@@ -75,7 +95,7 @@ async function sendToGPT3(senderInfo, markdownContent, instructions) {
   // Parse the object string into an actual JavaScript object
   const parsedObject1 = JSON.parse(objectString);
 
-  modifyJob(parsedObject1);
+  modifyJob(parsedObject1, markdownContent);
 
   console.log("parsedObject1: ", parsedObject1);
   // I've got the initial data baby
