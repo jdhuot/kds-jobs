@@ -276,7 +276,7 @@ exports.handler = async function(event, context) {
 
   const senderInfo = data.sender;
   const emailBodyHTML = data.bodyHtml;
-  const emailMarkdown = convertHtmlToMarkdown(emailBodyHTML);
+  let emailMarkdown = convertHtmlToMarkdown(emailBodyHTML);
   const keywords = ["work order", "robsdrywall", "spaar", "sanding", "job site", "job address", "sand"];
   // console.log("res.data.payload.parts: ", res.data.payload.parts);
   // console.log("emailMarkdown: ", emailMarkdown);
